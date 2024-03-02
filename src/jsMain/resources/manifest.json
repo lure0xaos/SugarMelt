@@ -1,0 +1,26 @@
+{
+  "name": "SugarMelt",
+  "version": "${version}",
+  "description": "Allows you to change font/style; also adds cheats",
+  "author": "Lure.of.Chaos@gmail.com",
+  "homepage_url": "https://github.com/lure0xaos/SugarMelt",
+  "manifest_version": 3,
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "file:///"
+  ],
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "devtools_page": "devtools.html",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "SugarMelt@lure0xaos"
+    }
+  }
+
+}
