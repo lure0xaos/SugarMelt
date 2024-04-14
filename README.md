@@ -1,6 +1,6 @@
 # SugarMelt
 
-## It's Kotlin rewrite of [SugarMelt](https://github.com/lure0xaos/SugarMelt)
+## It's Kotlin rewrite of [TwineHacker](https://github.com/lure0xaos/TwineHacker)
 
 ## Extension purpose and usage:
 
@@ -67,10 +67,13 @@ Extension is completely rewritten, these are changes:
 - support more HTML games and game engines
   (What a pity some of them requires patching, that's not this extension is intended to do)
 - removal and creation feature (in development)
+- correct sorting when new variables are discovered
 
 ## Latest changes
 
-- 04.03.2024 15:00 - README and naming updated, added LICENSE, submitted to Google Store
+- 14.03.2024 23:00 - v.3.0.3.2: (experimental) Russian translation added
+- 13.03.2024 23:00 - v.3.0.3.1: Some bugs fixed (Broken images, highlighting and filtering regression)
+- 04.03.2024 15:00 - v.3.0.3: README and naming updated, added LICENSE, submitted to Google Store
 - 29.02.2024 23:00 - new beta: auto update structure, support of Date & Map types
 - 04.04.2023 22:00 - hanging issues fixed (less computations, less cycles)
 

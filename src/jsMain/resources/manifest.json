@@ -6,9 +6,12 @@
   "homepage_url": "https://github.com/lure0xaos/SugarMelt",
   "manifest_version": 3,
   "permissions": [
-    "storage"
+    "storage",
+    "activeTab"
   ],
   "host_permissions": [
+    "*://*/*",
+    "file://*/*",
     "file:///"
   ],
   "icons": {
@@ -22,5 +25,4 @@
       "id": "SugarMelt@lure0xaos"
     }
   }
-
 }
