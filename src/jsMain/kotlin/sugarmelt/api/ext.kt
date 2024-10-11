@@ -4,7 +4,8 @@ import org.w3c.dom.Window
 import kotlin.js.Json
 import kotlin.js.Promise
 
-private val isChrome: Boolean = js("typeof chrome !== 'undefined'") as Boolean
+// Firefox seems to have started setting window.chrome to window.browser, Chrome however does not set window.browser
+private val isChrome: Boolean = !(js("!!window.browser") as Boolean)
 
 fun <T> evaluate(expression: String, onSuccess: (T) -> Unit = {}, onError: (Throwable) -> Unit = {}) {
     if (isChrome)
@@ -12,7 +13,9 @@ fun <T> evaluate(expression: String, onSuccess: (T) -> Unit = {}, onError: (Thro
             if (exception == null) onSuccess(result) else onError(Exception(exception))
         }
     else
-        browser.devtools.inspectedWindow.eval<T>(expression).then { onSuccess(it) }.catch { onError(it) }
+        browser.devtools.inspectedWindow.eval<T>(expression) { result, exception ->
+            if (exception == null) onSuccess(result) else onError(Exception(exception))
+        }
 }
 
 fun createPanel(title: String, icon: String, page: String, onShown: (Window) -> Unit, onHidden: (Window) -> Unit) {
