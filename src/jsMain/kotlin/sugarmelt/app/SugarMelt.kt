@@ -773,7 +773,10 @@ class SugarMelt(private val root: HTMLElement) {
             getManifest().apply {
                 createPanel(
                     Messages.panel_title(),
-                    getJson("icons")?.getString("16") ?: error("no icon"),
+                    // a relative path is required. The manifest contains the absolute path
+                    // in the future this could be improved with a more intelligent solution
+                    // but for now it makes the addon work again.
+                    "icons/16.png",
                     "panel.html",
                     {
                         require(instance == null)
