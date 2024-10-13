@@ -1,3 +1,7 @@
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 import kotlin.io.path.div
 import kotlin.io.path.relativeTo
 
@@ -94,9 +98,10 @@ tasks.named<Copy>("jsProcessResources") {
 }
 
 tasks.register<Copy>("copyRootResources") {
+    dependsOn("jsProcessResources")
     group = "resources"
     from(layout.projectDirectory)
-    into(tasks.getByName<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserProductionWebpack").outputDirectory)
+    into(tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack").outputDirectory)
     include("README.md", "LICENSE.md")
 }
 
@@ -113,7 +118,7 @@ private fun insertMeta(file: File, name: String, content: String) {
     }
 }
 
-tasks.getByName<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserDevelopmentWebpack") {
+tasks.getByName<KotlinWebpack>("jsBrowserDevelopmentWebpack") {
     dependsOn(tasks.getByName<Copy>("copyRootResources"))
     doLast {
         insertMeta(outputDirectory.get().file("panel.html").asFile, "mode", "development")
@@ -121,7 +126,7 @@ tasks.getByName<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("j
     }
 }
 
-tasks.getByName<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserProductionWebpack") {
+tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {
     dependsOn(tasks.getByName<Copy>("copyRootResources"))
     doLast {
         println("$name output is: ${this@getByName.outputDirectory.get().asFile.toLinkedString()}")
@@ -131,9 +136,9 @@ tasks.getByName<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("j
 tasks.register<Zip>("package") {
     group = "package"
     archiveFileName.set("${project.name}.zip")
-    val webpack =
-        tasks.getByName<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserProductionWebpack")
+    val webpack = tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack")
     dependsOn(webpack)
+    from(tasks.getByName("jsProcessResources").outputs)
     from(webpack.outputDirectory)
     val path = layout.buildDirectory.get().asFile.toPath() / "package"
     val directory = path.toFile()
@@ -146,7 +151,7 @@ tasks.register<Zip>("package") {
 }
 
 tasks.register<Zip>("zipSource") {
-    dependsOn("clean")
+    dependsOn("clean", "build")
     group = "package"
     archiveFileName.set("${project.name}-source.zip")
     from(layout.projectDirectory)
@@ -166,9 +171,8 @@ tasks.named("build") {
     finalizedBy(tasks.named("package"))
 }
 
-rootProject.plugins.withType(org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin::class.java) {
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().yarnLockMismatchReport =
-        org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport.WARNING
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().reportNewYarnLock = true
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().yarnLockAutoReplace = true
+rootProject.plugins.withType(YarnPlugin::class.java) {
+    rootProject.the<YarnRootExtension>().yarnLockMismatchReport = YarnLockMismatchReport.WARNING
+    rootProject.the<YarnRootExtension>().reportNewYarnLock = true
+    rootProject.the<YarnRootExtension>().yarnLockAutoReplace = true
 }

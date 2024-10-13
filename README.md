@@ -71,6 +71,9 @@ Extension is completely rewritten, these are changes:
 
 ## Latest changes
 
+- 14.10.2024 00:00 - v.3.0.3.4: it's usable again! Chrome and Firefox. thanks
+  for [@hikaru-shindo](https://github.com/hikaru-shindo) for fix
+- 14.03.2024 23:00 - v.3.0.3.3: (experimental and failed)
 - 14.03.2024 23:00 - v.3.0.3.2: (experimental) Russian translation added
 - 13.03.2024 23:00 - v.3.0.3.1: Some bugs fixed (Broken images, highlighting and filtering regression)
 - 04.03.2024 15:00 - v.3.0.3: README and naming updated, added LICENSE, submitted to Google Store

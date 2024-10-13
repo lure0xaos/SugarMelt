@@ -771,9 +771,15 @@ class SugarMelt(private val root: HTMLElement) {
         private var instance: SugarMelt? = null
         fun construct() {
             getManifest().apply {
+                val iconPath = getJson("icons")?.getString("16") ?: error("no icon")
+                val relIconPath =
+                    if ("://" in iconPath)
+                        iconPath.substringAfter("://").substringAfter('/')
+                    else
+                        iconPath
                 createPanel(
                     Messages.panel_title(),
-                    getJson("icons")?.getString("16") ?: error("no icon"),
+                    relIconPath,
                     "panel.html",
                     {
                         require(instance == null)
