@@ -71,6 +71,7 @@ Extension is completely rewritten, these are changes:
 
 ## Latest changes
 
+- 15.10.2024 01:00 - v.3.0.3.5: Chrome: it's usable again! Chrome and Firefox. thanks
 - 14.10.2024 00:00 - v.3.0.3.4: it's usable again! Chrome and Firefox. thanks
   for [@hikaru-shindo](https://github.com/hikaru-shindo) for fix
 - 14.03.2024 23:00 - v.3.0.3.3: (experimental and failed)
