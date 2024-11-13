@@ -13,8 +13,6 @@ import kotlin.js.Json
 
 class SugarMelt(private val root: HTMLElement) {
     private val devEnableExperimentalTools = false
-    private val isDevelopment: Boolean =
-        root.parentDocument.querySelector("meta[name=\"mode\"]")?.getAttribute("content") == "development"
 
     @Suppress("SpellCheckingInspection")
     private val engines = mapOf(
@@ -32,7 +30,8 @@ class SugarMelt(private val root: HTMLElement) {
     private lateinit var rootData: RootObjectData
     private fun detectEngines() {
         var tries = engines.size - 1
-        evaluate<String>("window.document.title",
+        evaluate<String>(
+            "window.document.title",
             { gameTitle.text(it) },
             { alertError(it, Messages.panel_error(it.message ?: "")) })
         engines.forEach { (key: String, value: String) ->
@@ -433,7 +432,15 @@ class SugarMelt(private val root: HTMLElement) {
         }
         val td = tr.div("td cell cell-data collapsible") { }
         th.onClick {
-            if (isMultiple && path.isNotEmpty() && name.isNotEmpty()) td.classList %= "collapsed"
+            if (isMultiple && path.isNotEmpty() && name.isNotEmpty()) {
+                td.classList %= "collapsed"
+                if (td.classList.contains("collapsed")) {
+                    val bb = td.getBoundingClientRect()
+                    val headerHeight = td.getElementByClass<Element>("table-header").clientHeight
+                    if (bb.top > td.parentWindow.innerHeight || bb.bottom < headerHeight)
+                        td.parentWindow.scrollTo(0.0, td.offsetTop - headerHeight.toDouble())
+                }
+            }
         }
         GeneralUI(table, th, td, deleteVarControl, createVarControl)
     }

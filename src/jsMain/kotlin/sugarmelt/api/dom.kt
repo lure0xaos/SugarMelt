@@ -13,6 +13,7 @@ typealias EventHandler<T> = T.(Event) -> Unit
 
 inline val <T : Element>T.parentDocument: Document get() = ownerDocument ?: error("not attached")
 inline val Document.window: Window get() = defaultView ?: error("no window for document")
+inline val <T : Element>T.parentWindow: Window get() = parentDocument.window
 fun <T : Element> Element.createElement(
     tag: String,
     classes: String? = null,
@@ -28,11 +29,21 @@ fun <T : Element> T.createText(text: String): T =
     parentDocument.createTextNode(text).also(::appendChild).let { this }
 
 fun <T : Element> T.text(text: String): T = createText(text)
+
 fun <T : Element> Element.findElement(id: String): T? =
     ownerDocument?.getElementById(id)?.unsafeCast<T>()
 
 fun <T : Element> Element.getElement(id: String): T =
     findElement(id) ?: error("element '$id' not found")
+
+fun <T : Element> Element.findElementsByClass(className: String): HTMLCollection? =
+    ownerDocument?.getElementsByClassName(className) ?: error("no elements '$className'")
+
+fun <T : Element> Element.findElementByClass(className: String): T? =
+    ownerDocument?.getElementsByClassName(className)?.item(0)?.unsafeCast<T>()
+
+fun <T : Element> Element.getElementByClass(className: String): T =
+    findElementByClass(className) ?: error("element '$className' not found")
 
 class AddEventListenerOptions {
     var capture: Boolean = true
@@ -62,6 +73,10 @@ inline fun HTMLCollection.forEachIndexed(action: (index: Int, Element) -> Unit) 
     var index = 0
     for (item in this) action(index++, item)
 }
+
+inline val HTMLCollection.size: Int get() = length
+inline fun HTMLCollection.first(): Element? = get(0)
+inline fun HTMLCollection.last(): Element? = get(length - 1)
 
 inline operator fun <reified E : HTMLElement> HTMLCollection.get(i: Int): E =
     item(i).also { require(it is E) { "item is not a ${E::class}" } } as E
