@@ -59,7 +59,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
-                api("nl.astraeus:kotlin-css-generator:$kotlinCssGeneratorVersion")
+                api("nl.astraeus:kotlin-css-generator-js:$kotlinCssGeneratorVersion")
                 api("de.comahe.i18n4k:i18n4k-core-js:$i18n4kVersion")
             }
         }
@@ -72,7 +72,7 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
-                api("nl.astraeus:kotlin-css-generator:$kotlinCssGeneratorVersion")
+                api("nl.astraeus:kotlin-css-generator-js:$kotlinCssGeneratorVersion")
                 implementation("de.comahe.i18n4k:i18n4k-core-js:$i18n4kVersion")
             }
         }
