@@ -5,22 +5,15 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 import kotlin.io.path.div
 import kotlin.io.path.relativeTo
 
-version = (properties["version"]).toString()
+version = properties["version"].toString()
 group = "sugarmelt"
 
 plugins {
-    val kotlinVersion: String by System.getProperties()
-    val i18n4kVersion: String by System.getProperties()
-    kotlin("multiplatform") version kotlinVersion
-    id("de.comahe.i18n4k") version i18n4kVersion
+    alias(libs.plugins.org.jetbrains.kotlin.multiplatform)
+    alias(libs.plugins.de.comahe.i18n4k)
 }
 
-val javaVersion: String by System.getProperties()
-val kotlinVersion: String by System.getProperties()
-val kotlinWrappersVersion: String by System.getProperties()
-val i18n4kVersion: String by System.getProperties()
-val kotlinCssGeneratorVersion: String by System.getProperties()
-
+val javaVersion: String = libs.versions.javaVersion.get()
 
 repositories {
     mavenCentral()
@@ -56,30 +49,31 @@ kotlin {
         }
     }
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
-                api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
-                api("nl.astraeus:kotlin-css-generator-js:$kotlinCssGeneratorVersion")
-                api("de.comahe.i18n4k:i18n4k-core-js:$i18n4kVersion")
+                api(project.dependencies.platform(libs.org.jetbrains.kotlin.wrappers.kotlin.wrappers.bom))
+                api(libs.nl.astraeus.kotlin.css.generator.js)
+                api(libs.de.comahe.i18n4k.i18n4k.core.js)
             }
         }
 
-        val commonTest by getting {
+        commonTest {
             dependencies {
-                api(kotlin("test"))
-            }
-        }
-        val jsMain by getting {
-            dependencies {
-                implementation(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:$kotlinWrappersVersion"))
-                api("nl.astraeus:kotlin-css-generator-js:$kotlinCssGeneratorVersion")
-                implementation("de.comahe.i18n4k:i18n4k-core-js:$i18n4kVersion")
+                api(libs.org.jetbrains.kotlin.kotlin.test.js)
             }
         }
 
-        val jsTest by getting {
+        jsMain {
             dependencies {
-                api(kotlin("test"))
+                implementation(project.dependencies.platform(libs.org.jetbrains.kotlin.wrappers.kotlin.wrappers.bom))
+                implementation(libs.nl.astraeus.kotlin.css.generator.js)
+                implementation(libs.de.comahe.i18n4k.i18n4k.core.js)
+            }
+        }
+
+        jsTest {
+            dependencies {
+                implementation(libs.org.jetbrains.kotlin.kotlin.test.js)
             }
         }
     }
@@ -122,14 +116,14 @@ tasks.getByName<KotlinWebpack>("jsBrowserDevelopmentWebpack") {
     dependsOn(tasks.getByName<Copy>("copyRootResources"))
     doLast {
         insertMeta(outputDirectory.get().file("panel.html").asFile, "mode", "development")
-        println("$name output is: ${this@getByName.outputDirectory.get().asFile.toLinkedString()}")
+        println("$name output is: ${outputDirectory.get().asFile.toLinkedString()}")
     }
 }
 
 tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {
     dependsOn(tasks.getByName<Copy>("copyRootResources"))
     doLast {
-        println("$name output is: ${this@getByName.outputDirectory.get().asFile.toLinkedString()}")
+        println("$name output is: ${outputDirectory.get().asFile.toLinkedString()}")
     }
 }
 
@@ -159,8 +153,9 @@ tasks.register<Zip>("zipSource") {
     val packagePath = buildPath / "package"
     val packageFile = packagePath / archiveFileName.get()
     exclude(".*", "*.zip", "gradle/wrapper")
-    exclude(listOf(buildPath, packagePath, packageFile)
-        .map { it.relativeTo(layout.projectDirectory.asFile.toPath()).toString() })
+    exclude(
+        listOf(buildPath, packagePath, packageFile)
+            .map { it.relativeTo(layout.projectDirectory.asFile.toPath()).toString() })
     destinationDirectory.set(packagePath.toFile())
     doLast {
         println("$name output is: ${packageFile.toLinkedString()} in ${packagePath.toLinkedString()}")
