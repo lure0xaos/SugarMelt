@@ -1,7 +1,7 @@
 [versions]
 javaVersion = "22"
-kotlinWrappersVersion = "2025.3.17"
-kotlinVersion = "2.1.10"
+kotlinWrappersVersion = "2025.3.19"
+kotlinVersion = "2.1.20"
 i18n4kVersion = "0.10.0"
 kotlinCssGeneratorVersion = "1.0.7"
 [plugins]
