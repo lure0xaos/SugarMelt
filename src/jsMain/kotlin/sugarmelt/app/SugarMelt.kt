@@ -706,15 +706,20 @@ class SugarMelt(private val root: HTMLElement) {
     }
 
     private fun filterSome(pattern: String) {
-        walkData {
-            val matchingPattern = pattern.isBlank() || isMatchingPattern(pattern, it)
-            it.ui.childrenPoint.apply {
-                if (matchingPattern) {
-                    classList -= "hidden"
-                    walkUp { generalData -> generalData.ui.childrenPoint.classList -= "hidden" }
-                } else {
-                    classList += "hidden"
-                }
+        walkData { data ->
+            val matches = pattern.isBlank() || isMatchingPattern(pattern, data)
+
+            // Apply the hidden class to both the name and the value cells
+            data.ui.labelPoint.apply {
+                if (matches) classList -= "hidden" else classList += "hidden"
+            }
+            data.ui.childrenPoint.apply {
+                if (matches) classList -= "hidden" else classList += "hidden"
+            }
+
+            // Ensure that ancestor tables stay visible when something matches
+            if (matches) {
+                walkUp(data) { ancestor -> ancestor.ui.childrenPoint.classList -= "hidden" }
             }
         }
     }
