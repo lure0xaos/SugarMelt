@@ -1,14 +1,18 @@
 [versions]
 javaVersion = "22"
-kotlinWrappersVersion = "2025.3.19"
-kotlinVersion = "2.1.20"
-i18n4kVersion = "0.10.0"
-kotlinCssGeneratorVersion = "1.0.7"
+org-jetbrains-kotlin = "2.3.21"
+org-jetbrains-kotlin-wrappers-kotlin-wrappers = "2026.5.5"
+de-comahe-i18n4k = "0.11.2"
+nl-astraeus-kotlin-css-generator = "1.1.0"
+
 [plugins]
-org-jetbrains-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlinVersion" }
-de-comahe-i18n4k = { id = "de.comahe.i18n4k", version.ref = "i18n4kVersion" }
+org-jetbrains-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "org-jetbrains-kotlin" }
+de-comahe-i18n4k = { id = "de.comahe.i18n4k", version.ref = "de-comahe-i18n4k" }
+
 [libraries]
-org-jetbrains-kotlin-wrappers-kotlin-wrappers-bom = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "kotlinWrappersVersion" }
-nl-astraeus-kotlin-css-generator-js = { module = "nl.astraeus:kotlin-css-generator-js", version.ref = "kotlinCssGeneratorVersion" }
-de-comahe-i18n4k-i18n4k-core-js = { module = "de.comahe.i18n4k:i18n4k-core-js", version.ref = "i18n4kVersion" }
-org-jetbrains-kotlin-kotlin-test-js = { module = "org.jetbrains.kotlin:kotlin-test-js", version.ref = "kotlinVersion" }
+org-jetbrains-kotlin-wrappers-kotlin-wrappers-bom = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "org-jetbrains-kotlin-wrappers-kotlin-wrappers" }
+org-jetbrains-kotlin-wrappers-kotlin-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser" }
+org-jetbrains-kotlin-wrappers-kotlin-web = { module = "org.jetbrains.kotlin-wrappers:kotlin-web" }
+de-comahe-i18n4k-i18n4k-core = { module = "de.comahe.i18n4k:i18n4k-core", version.ref = "de-comahe-i18n4k" }
+nl-astraeus-kotlin-css-generator = { module = "nl.astraeus:kotlin-css-generator", version.ref = "nl-astraeus-kotlin-css-generator" }
+org-jetbrains-kotlin-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "org-jetbrains-kotlin" }

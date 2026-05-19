@@ -1,12 +1,9 @@
 /.gradle/
 /build/
+/.kotlin/
+/kotlin-js-store/yarn.lock
 /.idea/
-*.iws
 *.iml
-/**/build/
-!src/**/build/
-!gradle-wrapper.jar
-!gradle-wrapper.properties
 *.class
 *.log
 *.jar
@@ -18,4 +15,3 @@
 *.rar
 hs_err_pid*
 replay_pid*
-/kotlin-js-store/yarn.lock

@@ -496,7 +496,7 @@ class SugarMelt(private val root: HTMLElement) {
         }
     }
 
-    private fun <I : GeneralData, T : Any?> getData(
+    private fun <I : GeneralData, T> getData(
         varData: I?,
         path: List<String>,
         name: String,
@@ -518,7 +518,7 @@ class SugarMelt(private val root: HTMLElement) {
         else -> 0
     }
 
-    private fun <I : GeneralData, T : Any?> create(
+    private fun <I : GeneralData, T> create(
         child: I?,
         path: List<String>,
         name: String,
@@ -707,14 +707,16 @@ class SugarMelt(private val root: HTMLElement) {
 
     private fun filterSome(pattern: String) {
         walkData {
-            val matchingPattern = pattern.isBlank() || isMatchingPattern(pattern, it)
+            val matchingPattern = pattern.isBlank() || isMatchingPattern(pattern, it) ||
+                    (it is VarData && isMatchingPattern(pattern, it))
+            it.ui.labelPoint.apply {
+                if (matchingPattern) classList -= "hidden" else classList += "hidden"
+            }
             it.ui.childrenPoint.apply {
-                if (matchingPattern) {
-                    classList -= "hidden"
-                    walkUp { generalData -> generalData.ui.childrenPoint.classList -= "hidden" }
-                } else {
-                    classList += "hidden"
-                }
+                if (matchingPattern) classList -= "hidden" else classList += "hidden"
+            }
+            if (matchingPattern) {
+                walkUp(it) { ancestor -> ancestor.ui.childrenPoint.classList -= "hidden" }
             }
         }
     }
