@@ -3,7 +3,51 @@ package sugarmelt.app
 import org.w3c.dom.*
 import sugarmelt.Messages
 import sugarmelt.api.*
-import sugarmelt.css.Stylesheets
+import sugarmelt.css.Stylesheets.CLASS_CONTAINER_BACKGROUND
+import sugarmelt.css.Stylesheets.CLASS_BUTTON
+import sugarmelt.css.Stylesheets.CLASS_CELL
+import sugarmelt.css.Stylesheets.CLASS_CELL_DATA
+import sugarmelt.css.Stylesheets.CLASS_CELL_DATA_COLLAPSED
+import sugarmelt.css.Stylesheets.CLASS_CELL_DATA_COLLAPSIBLE
+import sugarmelt.css.Stylesheets.CLASS_CELL_DATA_MULTIPLE
+import sugarmelt.css.Stylesheets.CLASS_CELL_DATA_SINGLE
+import sugarmelt.css.Stylesheets.CLASS_CELL_LABEL
+import sugarmelt.css.Stylesheets.CLASS_CLICKABLE
+import sugarmelt.css.Stylesheets.CLASS_EDITOR
+import sugarmelt.css.Stylesheets.CLASS_EDITOR_CHANGED
+import sugarmelt.css.Stylesheets.CLASS_EDITOR_HIGHLIGHT
+import sugarmelt.css.Stylesheets.CLASS_EDITOR_LOCK
+import sugarmelt.css.Stylesheets.CLASS_EDITOR__TYPE
+import sugarmelt.css.Stylesheets.CLASS_GRID
+import sugarmelt.css.Stylesheets.CLASS_GRID_ROW
+import sugarmelt.css.Stylesheets.CLASS_GRID_ROW_CELL
+import sugarmelt.css.Stylesheets.CLASS_GRID_ROW_CELL_ITEM
+import sugarmelt.css.Stylesheets.CLASS_GRID_ROW_CELL_LABEL
+import sugarmelt.css.Stylesheets.CLASS_GRID_VAR_CONTROLS
+import sugarmelt.css.Stylesheets.CLASS_HIDDEN
+import sugarmelt.css.Stylesheets.CLASS_LABEL
+import sugarmelt.css.Stylesheets.CLASS_MESSAGE
+import sugarmelt.css.Stylesheets.CLASS_MESSAGE__TYPE
+import sugarmelt.css.Stylesheets.CLASS_OBJECT_EMPTY
+import sugarmelt.css.Stylesheets.CLASS_SMALL
+import sugarmelt.css.Stylesheets.CLASS_STICKY_TOP
+import sugarmelt.css.Stylesheets.CLASS_STICKY_TOP_AFTER
+import sugarmelt.css.Stylesheets.CLASS_SWITCH
+import sugarmelt.css.Stylesheets.CLASS_SWITCH_SLIDER
+import sugarmelt.css.Stylesheets.CLASS_SWITCH_SLIDER_ROUND
+import sugarmelt.css.Stylesheets.CLASS_TABLE
+import sugarmelt.css.Stylesheets.CLASS_TABLE_HEADER
+import sugarmelt.css.Stylesheets.CLASS_TD
+import sugarmelt.css.Stylesheets.CLASS_TH
+import sugarmelt.css.Stylesheets.CLASS_TOOLS
+import sugarmelt.css.Stylesheets.CLASS_TR
+import sugarmelt.css.Stylesheets.CLASS_Z_1
+import sugarmelt.css.Stylesheets.ID_CONTAINER
+import sugarmelt.css.Stylesheets.ID_CONTENT
+import sugarmelt.css.Stylesheets.ID_CONTROLS
+import sugarmelt.css.Stylesheets.ID_GAME_TITLE
+import sugarmelt.css.Stylesheets.ID_TOOLBAR
+import sugarmelt.css.Stylesheets.stylesheet
 import sugarmelt.data.SugarMeltOptions
 import sugarmelt.data.info.*
 import sugarmelt.data.ui.GeneralUI
@@ -20,6 +64,12 @@ class SugarMelt(private val root: HTMLElement) {
         "SugarCube2" to "SugarCube.State.active.variables",
         "wetgame" to "wetgame.state.story.variablesState._globalVariables"
     )
+
+    private enum class MessageType(val value: String) {
+        SUCCESS("success"),
+        ERROR("error"),
+    }
+
     private val content: HTMLElement
     private val status: HTMLElement
     private val gameTitle: HTMLHeadingElement
@@ -39,15 +89,15 @@ class SugarMelt(private val root: HTMLElement) {
                 if (rootExpression.isBlank()) {
                     if (vars == null) {
                         tries--
-                        if (tries == 0) messageUi("error", Messages.engines_detected_error())
+                        if (tries == 0) messageUi(MessageType.ERROR, Messages.engines_detected_error())
                     } else {
-                        messageUi("success", Messages.engines_detected_success(key))
+                        messageUi(MessageType.SUCCESS, Messages.engines_detected_success(key))
                         onInspect(value, vars)
                     }
                 }
             }, {
                 tries--
-                if (tries == 0) messageUi("error", Messages.engines_detected_error())
+                if (tries == 0) messageUi(MessageType.ERROR, Messages.engines_detected_error())
             })
         }
     }
@@ -132,7 +182,7 @@ class SugarMelt(private val root: HTMLElement) {
             rootData
         }.also { rootObjectData ->
             addVarToolsHandlers(rootObjectData)
-            value.entries.sortedBy { it.first.lowercase() }.forEach { (key, child) ->
+            value.entries.sortedBy { (key) -> key.lowercase() }.forEach { (key, child) ->
                 updateField(rootObjectData, updateStyle, listOf(key), key, child)
             }
         }
@@ -156,7 +206,7 @@ class SugarMelt(private val root: HTMLElement) {
         }.also { objectData ->
             addVarToolsHandlers(objectData)
             parentData[name] = objectData
-            value.entries.sortedBy { it.first.lowercase() }.forEach { (key, child) ->
+            value.entries.sortedBy { (key) -> key.lowercase() }.forEach { (key, child) ->
                 updateField(objectData, updateStyle, path + listOf(key), key, child)
             }
         }
@@ -180,7 +230,7 @@ class SugarMelt(private val root: HTMLElement) {
         }.also { objectData ->
             addVarToolsHandlers(objectData)
             parentData[name] = objectData
-            value.entries.sortedBy { it.key.lowercase() }.forEach { (key, child) ->
+            value.entries.sortedBy { (key) -> key.lowercase() }.forEach { (key, child) ->
                 updateField(objectData, updateStyle, path + listOf(key), key, child)
             }
         }
@@ -220,19 +270,23 @@ class SugarMelt(private val root: HTMLElement) {
             val ui = createUi(parentData.ui, path, dataName, jsType, isMultiple = false, isEmpty = false)
             val isBoolean = jsType == "boolean"
             val editor = if (isBoolean) {
-                ui.childrenPoint.label("switch") {
+                ui.childrenPoint.label(CLASS_SWITCH) {
                     this.title = tooltip
                 }.run {
-                    input(getInputType(jsType), toEditor(jsType, dataValue), "editor editor-$jsType") {
+                    input(
+                        getInputType(jsType),
+                        toEditor(jsType, dataValue),
+                        "$CLASS_EDITOR ${CLASS_EDITOR__TYPE}$jsType"
+                    ) {
                         this.title = tooltip
                         this.checked = toBoolean("boolean", dataValue)
                     }
                 }.apply {
-                    parentElement?.div("slider round")
+                    parentElement?.div("$CLASS_SWITCH_SLIDER $CLASS_SWITCH_SLIDER_ROUND")
                 }
             } else {
                 ui.childrenPoint.input(
-                    getInputType(jsType), toEditor(jsType, dataValue), "editor editor-$jsType"
+                    getInputType(jsType), toEditor(jsType, dataValue), "$CLASS_EDITOR ${CLASS_EDITOR__TYPE}$jsType"
                 ) {
                     this.title = tooltip
                 }
@@ -240,7 +294,7 @@ class SugarMelt(private val root: HTMLElement) {
             val lock: HTMLInputElement
             ui.childrenPoint.also {
                 val lockId = "lock_${getIdFrom(path)}"
-                lock = it.input("checkbox", "locked", "editor-lock") {
+                lock = it.input("checkbox", "locked", CLASS_EDITOR_LOCK) {
                     id = lockId
                     title = Messages.panel_field_lock(tooltip)
                 }
@@ -400,43 +454,43 @@ class SugarMelt(private val root: HTMLElement) {
     ): GeneralUI = parentUi.childrenPoint.run {
         val table = div(
             makeClasses(
-                "table",
-                "grid",
+                CLASS_TABLE,
+                CLASS_GRID,
                 jsType,
-                if (isMultiple) "multiple" else "single",
-                if (isMultiple && path.isNotEmpty() && name.isNotEmpty()) "collapsible" else "",
-                if (isEmpty) "object-empty" else "",
+                if (isMultiple) CLASS_CELL_DATA_MULTIPLE else CLASS_CELL_DATA_SINGLE,
+                if (isMultiple && path.isNotEmpty() && name.isNotEmpty()) CLASS_CELL_DATA_COLLAPSIBLE else "",
+                if (isEmpty) CLASS_OBJECT_EMPTY else "",
             )
         ) {
             id = "object_${getIdFrom(path)}"
         }
-        val tr = table.div("tr row") { }
+        val tr = table.div("$CLASS_TR $CLASS_GRID_ROW") { }
         var deleteVarControl: HTMLInputElement? = null
         var createVarControl: HTMLInputElement? = null
-        val th = tr.div("th cell cell-label clickable") { }.apply {
+        val th = tr.div("$CLASS_TH $CLASS_GRID_ROW_CELL $CLASS_GRID_ROW_CELL_LABEL $CLASS_CLICKABLE") { }.apply {
             label("label $name") { title = "$path $jsType" }.text(getLabelFrom(name))
             if (devEnableExperimentalTools) {
-                span("var-controls").apply {
+                span(CLASS_GRID_VAR_CONTROLS).apply {
                     if (parentUi != rootData.ui && path.isNotEmpty() && name.isNotEmpty()) {
-                        deleteVarControl = input("button", Messages.var_control_delete_button(), "button") {
+                        deleteVarControl = input(CLASS_BUTTON, Messages.var_control_delete_button(), CLASS_BUTTON) {
                             title = Messages.var_control_delete_button_help()
                         }
                     }
                     if (!isMultiple) {
-                        createVarControl = input("button", Messages.var_control_create_button(), "button") {
+                        createVarControl = input(CLASS_BUTTON, Messages.var_control_create_button(), CLASS_BUTTON) {
                             title = Messages.var_control_create_button()
                         }
                     }
                 }
             }
         }
-        val td = tr.div("td cell cell-data collapsible") { }
+        val td = tr.div("$CLASS_TD $CLASS_CELL $CLASS_CELL_DATA $CLASS_CELL_DATA_COLLAPSIBLE") { }
         th.onClick {
             if (isMultiple && path.isNotEmpty() && name.isNotEmpty()) {
-                td.classList %= "collapsed"
-                if (td.classList.contains("collapsed")) {
+                td.classList %= CLASS_CELL_DATA_COLLAPSED
+                if (td.classList.contains(CLASS_CELL_DATA_COLLAPSED)) {
                     val bb = td.getBoundingClientRect()
-                    val headerHeight = td.getElementByClass<Element>("table-header").clientHeight
+                    val headerHeight = td.getElementByClass<Element>(CLASS_TABLE_HEADER).clientHeight
                     if (bb.top > td.parentWindow.innerHeight || bb.bottom < headerHeight)
                         td.parentWindow.scrollTo(0.0, td.offsetTop - headerHeight.toDouble())
                 }
@@ -504,10 +558,14 @@ class SugarMelt(private val root: HTMLElement) {
         value: T,
         creator: (child: I?, path: List<String>, name: String, jsType: String, value: T) -> I
     ): I =
-        (if ((jsIsUndefined(value)) || (varData == null) || (varData is NullData && varData.jsType != jsType) || (varData is VarData && varData.jsType != jsType) || (varData is GeneralCollectionData && varData.size > getValueSize(
-                value
-            ))
-        ) create(varData, path, name, jsType, value, creator) else varData)
+        (if (
+            (jsIsUndefined(value)) ||
+            (varData == null) ||
+            (varData is NullData && varData.jsType != jsType) ||
+            (varData is VarData && varData.jsType != jsType) ||
+            (varData is GeneralCollectionData && varData.size > getValueSize(value))
+        )
+            create(varData, path, name, jsType, value, creator) else varData)
 
     private fun getValueSize(value: Any?): Int = when {
         value == null -> 0
@@ -547,7 +605,7 @@ class SugarMelt(private val root: HTMLElement) {
     }
 
     private fun updateFieldStyle(varData: VarData, changed: Boolean): HTMLElement = varData.ui.editor.apply {
-        if (changed) classList.add("changed") else classList.remove("changed")
+        if (changed) classList += CLASS_EDITOR_CHANGED else classList -= CLASS_EDITOR_CHANGED
     }
 
     private fun clearAllFieldsStyle() {
@@ -601,8 +659,8 @@ class SugarMelt(private val root: HTMLElement) {
         }
     }
 
-    private fun messageUi(type: String = "", message: String): HTMLElement = status.apply {
-        className = (makeClasses("message", if (type.isBlank()) "" else "message-${type}"))
+    private fun messageUi(type: MessageType? = null, message: String): HTMLElement = status.apply {
+        className = (makeClasses(CLASS_MESSAGE, if (type == null) "" else "${CLASS_MESSAGE__TYPE}${type.value}"))
         textContent = message
     }
 
@@ -628,9 +686,9 @@ class SugarMelt(private val root: HTMLElement) {
     }
 
     private fun HTMLElement.initTools() {
-        val tr = div { id = "controls" }.div("table grid tools").div("tr row")
-        tr.div("th cell cell-label").label("label").text(Messages.options_interval_label())
-        tr.div("td cell cell-data").input("number", options.interval.toString(), "editor") {
+        val tr = div { id = ID_CONTROLS }.div("$CLASS_TABLE $CLASS_GRID $CLASS_TOOLS").div("$CLASS_TR $CLASS_GRID_ROW")
+        tr.div("$CLASS_TH $CLASS_CELL $CLASS_CELL_LABEL").label(CLASS_LABEL).text(Messages.options_interval_label())
+        tr.div("$CLASS_TD $CLASS_CELL $CLASS_CELL_DATA").input("number", options.interval.toString(), CLASS_EDITOR) {
             onChange {
                 options.interval = value.toInt()
                 options.save()
@@ -640,14 +698,16 @@ class SugarMelt(private val root: HTMLElement) {
                 value = options.interval.toString()
             }
         }
-        tr.div("td cell cell-data small").text(Messages.options_interval_help())
-        tr.div("th cell cell-label").label("label").text(Messages.controls_filter_label())
-        val elementFilter = tr.div("td cell cell-item").input("text", "", "editor") {
+        tr.div("$CLASS_TD $CLASS_CELL $CLASS_CELL_DATA $CLASS_SMALL").text(Messages.options_interval_help())
+        tr.div("$CLASS_TH $CLASS_CELL $CLASS_CELL_LABEL").label(CLASS_LABEL).text(Messages.controls_filter_label())
+        val elementFilter = tr.div("$CLASS_TD $CLASS_CELL $CLASS_GRID_ROW_CELL_ITEM").input("text", "", CLASS_EDITOR) {
             title = Messages.controls_filter_help()
             onKeyUp { filterSome(value) }
             onFocus { select() }
         }
-        tr.div("td cell cell-item small").input("button", Messages.controls_filter_button(), "button") {
+        tr.div("$CLASS_TD $CLASS_CELL $CLASS_GRID_ROW_CELL_ITEM $CLASS_SMALL").input("button", Messages.controls_filter_button(),
+            CLASS_BUTTON
+        ) {
             title = Messages.controls_filter_button_help()
             onClick {
                 elementFilter.value = ""
@@ -655,13 +715,14 @@ class SugarMelt(private val root: HTMLElement) {
                 elementFilter.focus()
             }
         }
-        tr.div("th cell cell-label").label("label").text(Messages.controls_highlight_label())
-        val elementHighlight = tr.div("td cell cell-item").input("text", "", "editor") {
+        tr.div("$CLASS_TH $CLASS_CELL $CLASS_CELL_LABEL").label(CLASS_LABEL).text(Messages.controls_highlight_label())
+        val elementHighlight = tr.div("$CLASS_TD $CLASS_CELL $CLASS_GRID_ROW_CELL_ITEM").input("text", "", CLASS_EDITOR) {
             title = Messages.controls_highlight_help()
             onKeyUp { highlightSome(value) }
             onFocus { select() }
         }
-        tr.div("td cell cell-item small").input("button", Messages.controls_highlight_button(), "button") {
+        tr.div("$CLASS_TD $CLASS_CELL $CLASS_GRID_ROW_CELL_ITEM $CLASS_SMALL")
+            .input("button", Messages.controls_highlight_button(), CLASS_BUTTON) {
             title = Messages.controls_highlight_button_help()
             onClick {
                 elementHighlight.value = ""
@@ -672,14 +733,14 @@ class SugarMelt(private val root: HTMLElement) {
     }
 
     private fun <T : Element> T.buttonCollapse(): T = apply {
-        input("button", Messages.controls_collapse_button(), "button") {
+        input("button", Messages.controls_collapse_button(), CLASS_BUTTON) {
             title = Messages.controls_collapse_button_help()
             onClick { expandCollapseAll(true) }
         }
     }
 
     private fun <T : Element> T.buttonExpand(): T = apply {
-        input("button", Messages.controls_expand_button(), "button") {
+        input("button", Messages.controls_expand_button(), CLASS_BUTTON) {
             title = Messages.controls_expand_button_help()
             onClick { expandCollapseAll(false) }
         }
@@ -691,16 +752,16 @@ class SugarMelt(private val root: HTMLElement) {
             val matchingPattern = pattern.isNotBlank() && isMatchingPattern(pattern, it)
             it.ui.labelPoint.also { element ->
                 if (matchingPattern) {
-                    element.classList.add("highlight")
+                    element.classList+= CLASS_EDITOR_HIGHLIGHT
                 } else {
-                    element.classList.remove("highlight")
+                    element.classList-= CLASS_EDITOR_HIGHLIGHT
                 }
             }
         }
         walkVars {
             val matchingPattern = pattern.isNotBlank() && isMatchingPattern(pattern, it)
             it.ui.editor.also { element ->
-                if (matchingPattern) element.classList += "highlight" else element.classList -= "highlight"
+                if (matchingPattern) element.classList += CLASS_EDITOR_HIGHLIGHT else element.classList -= CLASS_EDITOR_HIGHLIGHT
             }
         }
     }
@@ -710,13 +771,13 @@ class SugarMelt(private val root: HTMLElement) {
             val matchingPattern = pattern.isBlank() || isMatchingPattern(pattern, it) ||
                     (it is VarData && isMatchingPattern(pattern, it))
             it.ui.labelPoint.apply {
-                if (matchingPattern) classList -= "hidden" else classList += "hidden"
+                if (matchingPattern) classList -= CLASS_HIDDEN else classList += CLASS_HIDDEN
             }
             it.ui.childrenPoint.apply {
-                if (matchingPattern) classList -= "hidden" else classList += "hidden"
+                if (matchingPattern) classList -= CLASS_HIDDEN else classList += CLASS_HIDDEN
             }
             if (matchingPattern) {
-                walkUp(it) { ancestor -> ancestor.ui.childrenPoint.classList -= "hidden" }
+                walkUp(it) { ancestor -> ancestor.ui.childrenPoint.classList -= CLASS_HIDDEN }
             }
         }
     }
@@ -741,10 +802,10 @@ class SugarMelt(private val root: HTMLElement) {
     private fun isCollectionData(it: GeneralData): Boolean = it is GeneralCollectionData && it !is RootObjectData
 
     private fun expandCollapseAction(generalData: GeneralData, collapse: Boolean) {
-        generalData.ui.childrenPoint.apply { if (collapse) classList += ("collapsed") else classList -= ("collapsed") }
+        generalData.ui.childrenPoint.apply { if (collapse) classList += (CLASS_CELL_DATA_COLLAPSED) else classList -= (CLASS_CELL_DATA_COLLAPSED) }
     }
 
-    private fun isCollapsible(element: HTMLElement): Boolean = "collapsible" in element.classList
+    private fun isCollapsible(element: HTMLElement): Boolean = CLASS_CELL_DATA_COLLAPSIBLE in element.classList
 
     private fun scheduleUpdate() {
         if (options.isAutomatic) root.parentDocument.window.setTimeout({ updateAllFields(false) }, options.interval)
@@ -756,20 +817,20 @@ class SugarMelt(private val root: HTMLElement) {
 
     init {
         root.apply {
-            addStyle(Stylesheets.stylesheet)
+            addStyle(stylesheet)
             removeAll()
-            div { id = "container" }.apply {
-                val table = div("table table-header sticky-top z-1 background-black")
-                table.div("tr row").div("td cell").initHeader()
-                val row = table.div("tr row")
-                gameTitle = row.div("td cell").h1 { id = "game-title" }
-                toolbar = row.div("td cell").div { id = "toolbar" }
-                row.div("td cell").initTools()
-                div("sticky-top-after").also {
+            div { id = ID_CONTAINER }.apply {
+                val table = div("$CLASS_TABLE $CLASS_TABLE_HEADER $CLASS_STICKY_TOP $CLASS_Z_1 $CLASS_CONTAINER_BACKGROUND")
+                table.div("$CLASS_TR $CLASS_GRID_ROW").div("$CLASS_TD $CLASS_CELL").initHeader()
+                val row = table.div("$CLASS_TR $CLASS_GRID_ROW")
+                gameTitle = row.div("$CLASS_TD $CLASS_CELL").h1 { id = ID_GAME_TITLE }
+                toolbar = row.div("$CLASS_TD $CLASS_CELL").div { id = ID_TOOLBAR }
+                row.div("$CLASS_TD $CLASS_CELL").initTools()
+                div(CLASS_STICKY_TOP_AFTER).also {
                     it.style.paddingTop = "" + table.clientHeight + "px"
                 }
-                status = div("message")
-                content = div { id = "content" }
+                status = div(CLASS_MESSAGE)
+                content = div { id = ID_CONTENT }
             }
         }
         detectEngines()
