@@ -71,7 +71,7 @@ Extension is completely rewritten, these are changes:
 
 ## Latest changes
 
-- 20.05.2026 21:00 - v.3.0.4: filter upgrade (thanks to @flying-hippo)
+- 20.05.2026 21:00 - v.3.0.4: filter fix (thanks to @[flying-hippo](https://github.com/flying-hippo)). Changed some colors. Code refucktoring.
 - 15.10.2024 01:00 - v.3.0.3.5: Chrome: it's usable again! Chrome and Firefox. thanks
 - 14.10.2024 00:00 - v.3.0.3.4: it's usable again! Chrome and Firefox. thanks
   for [@hikaru-shindo](https://github.com/hikaru-shindo) for fix
