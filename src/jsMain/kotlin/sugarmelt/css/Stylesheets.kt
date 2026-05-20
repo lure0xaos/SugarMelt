@@ -15,9 +15,29 @@ object Stylesheets {
     private val successColor = Color("#008000")
     private val tertiaryColor = Color("#808080")
     private val highlightColor = Color("#ffff00")
+    private val changedColor = Color("#00ff00")
     private val hoverColor = Color("#ccccff")
     private val collapseColor = Color("#660000")
     private val collapseHoverColor = Color("#803333")
+
+    private val colorBorders = Color.gray
+
+    private val sliderHeight = 17.px
+    private val sliderWidth = 30.px
+    private val sliderSize = 13.px
+    private val sliderPos = 2.px
+    private val sliderColorOn = Color.mediumBlue
+    private val sliderColorOff = Color("#333333")
+    private val sliderColor = Color.white
+    private val sliderTransition = ".4s"
+
+    private val lockColorSecondary = "#0000FF"
+    private val lockColorPrimary = "#FF00FF"
+    private val lockSvgUnchecked =
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"15\" height=\"15\" viewBox=\"0 0 150 150\" version=\"1.0\" y=\"0\" x=\"0\"><g transform=\"translate(-2.9648 2.5)\"><path style=\"fill-rule:evenodd;fill:$lockColorSecondary\" d=\"m112.5 4.1909c-20.072 0-36.231 16.159-36.231 36.231v40.256h10.064v-40.256c0-14.497 11.671-26.167 26.167-26.167 14.5 0 26.17 11.67 26.17 26.167v27.756h10.06v-27.756c0-20.072-16.16-36.231-36.23-36.231z\"/><rect style=\"fill-rule:evenodd;fill:$lockColorPrimary\" rx=\"0.5\" ry=\"0.5\" height=\"66.259\" width=\"85.603\" y=\"74.55\" x=\"7.1987\"/></g></svg>"
+    private val lockSvgChecked =
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"15\" height=\"15\" viewBox=\"0 0 150 150\" version=\"1.0\" y=\"0\" x=\"0\"><g transform=\"translate(10.641 12.191)\"><path style=\"fill-rule:evenodd;fill:$lockColorSecondary\" d=\"m64.359 2c-20.072 0-36.231 16.159-36.231 36.231v40.256h10.064v-40.256c0-14.497 11.671-26.167 26.167-26.167s26.167 11.67 26.167 26.167v40.256h10.064v-40.256c0-20.072-16.159-36.231-36.231-36.231z\"/><rect style=\"fill-rule:evenodd;fill:$lockColorPrimary\" rx=\"0.5\" ry=\"0.5\" height=\"66.259\" width=\"85.603\" y=\"57.359\" x=\"21.558\"/></g></svg>"
+
 
     val stylesheet: String = style {
         cssTables()
@@ -54,7 +74,7 @@ object Stylesheets {
             boxSizing(BoxSizing.borderBox)
             textIndent(Measurement.initial)
             borderSpacing(BorderSpacing.px(2))
-            borderColor(Color.gray)
+            borderColor(colorBorders)
             select(cls("caption")) {
                 display(Display.tableCaption)
                 textAlign(TextAlign.center)
@@ -158,56 +178,48 @@ object Stylesheets {
                 maxWidth(3.em)
             }
             and(cls("changed")) {
-                borderColor(highlightColor)
+                borderColor(changedColor)
             }
             and(cls("highlight")) {
                 color(highlightColor)
             }
         }
         select(cls("switch")) {
-            val switchHeight = 17.px
-            val switchWidth = 30.px
-            val sliderSize = 13.px
-            val sliderPos = 2.px
-            val colorOn = Color.mediumBlue
-            val colorOff = Color("#333333")
-            val color = Color.white
-            val transition = ".4s"
             display(Display.inlineBlock)
-            height(switchHeight)
+            height(sliderHeight)
             position(Position.relative)
-            width(switchWidth)
+            width(sliderWidth)
             select("input") {
                 display(Display.none)
             }
             select(cls("slider")) {
-                backgroundColor(colorOff)
+                backgroundColor(sliderColorOff)
                 bottom(0.px)
                 cursor("pointer")
                 left(0.px)
                 position(Position.absolute)
                 right(0.px)
                 top(0.px)
-                transition(transition)
+                transition(sliderTransition)
                 and((":before")) {
-                    backgroundColor(color)
+                    backgroundColor(sliderColor)
                     bottom(sliderPos)
                     content(Content("''"))
                     height(sliderSize)
                     left(sliderPos)
                     position(Position.absolute)
-                    transition(transition)
+                    transition(sliderTransition)
                     width(sliderSize)
                 }
                 and(cls("round")) {
-                    borderRadius(switchHeight)
+                    borderRadius(sliderHeight)
                     and(":before") {
                         borderRadius(50.prc)
                     }
                 }
             }
             select("input:checked + .slider") {
-                backgroundColor(colorOn)
+                backgroundColor(sliderColorOn)
                 and(":before") {
                     transform(Transform("translateX($sliderSize)"))
                 }
@@ -220,10 +232,10 @@ object Stylesheets {
         select("input[type=\"checkbox\"].editor-lock") {
             display(Display.none)
             and(" + label:after") {
-                content(Content.inlineSvg("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"15\" height=\"15\" viewBox=\"0 0 150 150\" version=\"1.0\" y=\"0\" x=\"0\"><g transform=\"translate(-2.9648 2.5)\"><path style=\"fill-rule:evenodd;fill:#0000FF\" d=\"m112.5 4.1909c-20.072 0-36.231 16.159-36.231 36.231v40.256h10.064v-40.256c0-14.497 11.671-26.167 26.167-26.167 14.5 0 26.17 11.67 26.17 26.167v27.756h10.06v-27.756c0-20.072-16.16-36.231-36.23-36.231z\"/><rect style=\"fill-rule:evenodd;fill:#FFFF00\" rx=\"0.5\" ry=\"0.5\" height=\"66.259\" width=\"85.603\" y=\"74.55\" x=\"7.1987\"/></g></svg>"))
+                content(Content.inlineSvg(lockSvgUnchecked))
             }
             and(":checked + label:after") {
-                content(Content.inlineSvg("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"15\" height=\"15\" viewBox=\"0 0 150 150\" version=\"1.0\" y=\"0\" x=\"0\"><g transform=\"translate(10.641 12.191)\"><path style=\"fill-rule:evenodd;fill:#0000FF\" d=\"m64.359 2c-20.072 0-36.231 16.159-36.231 36.231v40.256h10.064v-40.256c0-14.497 11.671-26.167 26.167-26.167s26.167 11.67 26.167 26.167v40.256h10.064v-40.256c0-20.072-16.159-36.231-36.231-36.231z\"/><rect style=\"fill-rule:evenodd;fill:#FFFF00\" rx=\"0.5\" ry=\"0.5\" height=\"66.259\" width=\"85.603\" y=\"57.359\" x=\"21.558\"/></g></svg>"))
+                content(Content.inlineSvg(lockSvgChecked))
             }
         }
         select(cls("object-empty")) {
