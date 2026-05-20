@@ -1,5 +1,7 @@
 /.gradle/
 /build/
+/buildSrc/.gradle/
+/buildSrc/build/
 /.kotlin/
 /kotlin-js-store/yarn.lock
 /.idea/

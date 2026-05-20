@@ -1,5 +1,4 @@
-import kotlin.io.path.div
-import kotlin.io.path.relativeTo
+import utils.toLinkedString
 
 version = properties["version"].toString()
 group = "sugarmelt"
@@ -61,11 +60,14 @@ kotlin {
 
 tasks.named<Copy>("jsProcessResources") {
     duplicatesStrategy = DuplicatesStrategy.WARN
-    dependsOn(tasks.getByName("generateI18n4kFiles"))
+    dependsOn("generateI18n4kFiles")
+    val map = properties
+        .filterValues { it is String || it is Number || it is Boolean }
+        .mapValues { (_, value) -> value.toString() }
     filesMatching("manifest.json") {
         filter {
             it.replace(Regex("\\$\\{([^}]+)\\}")) { result ->
-                properties[result.groups[1]!!.value]?.toString() ?: result.value
+                map[result.groups[1]!!.value] ?: result.value
             }
         }
     }
@@ -74,16 +76,13 @@ tasks.named<Copy>("jsProcessResources") {
 tasks.register<Copy>("copyRootResources") {
     dependsOn("jsProcessResources")
     group = "resources"
+    description = "copy root resources"
     from(layout.projectDirectory)
-    into(tasks.getByName<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserProductionWebpack").outputDirectory)
+    val taskProvider =
+        tasks.named<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserProductionWebpack")
+    into(taskProvider.flatMap { it.outputDirectory })
     include("README.md", "LICENSE.md")
 }
-
-private fun File.toLinkedString(): String =
-    toURI().toURL().toExternalForm().replace("file:/", "file:///")
-
-private fun java.nio.file.Path.toLinkedString(): String =
-    toFile().toURI().toURL().toExternalForm().replace("file:/", "file:///")
 
 private fun insertMeta(file: File, name: String, content: String) {
     val meta = "<meta name=\"$name\" content=\"$content\"/>"
@@ -92,73 +91,83 @@ private fun insertMeta(file: File, name: String, content: String) {
     }
 }
 
-tasks.getByName<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserDevelopmentWebpack") {
-    dependsOn(tasks.getByName<Copy>("copyRootResources"))
+tasks.named<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserDevelopmentWebpack") {
+    dependsOn("copyRootResources")
+    val directoryProperty = outputDirectory
+    val taskName = name
     doLast {
-        insertMeta(outputDirectory.get().file("panel.html").asFile, "mode", "development")
-        println("$name output is: ${outputDirectory.get().asFile.toLinkedString()}")
+        insertMeta(directoryProperty.file("panel.html").get().asFile, "mode", "development")
+        println("$taskName output is: ${directoryProperty.asFile.get().toLinkedString()}")
     }
 }
 
-tasks.getByName<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserProductionWebpack") {
-    dependsOn(tasks.getByName<Copy>("copyRootResources"))
+tasks.named<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserProductionWebpack") {
+    dependsOn("copyRootResources")
+    val directoryProperty = outputDirectory
+    val taskName = name
     doLast {
-        println("$name output is: ${outputDirectory.get().asFile.toLinkedString()}")
+        println("$taskName output is: ${directoryProperty.asFile.get().toLinkedString()}")
     }
 }
 
 tasks.register<Copy>("unpacked") {
     description = "package all files"
     group = "package"
-    from(tasks.getByName("jsBrowserDistribution"))
-    destinationDir = layout.buildDirectory.dir("dist/package").get().asFile
+    val taskName = name
+    from(tasks.named("jsBrowserDistribution"))
+    val destDir = layout.buildDirectory.dir("dist/package")
+    into(destDir)
     include("**/*")
+    val map = properties
+        .filterValues { it is String || it is Number || it is Boolean }
+        .mapValues { (_, value) -> value.toString() }
     filesMatching("manifest.json") {
         filter {
             it.replace(Regex("\\$\\{([^}]+)\\}")) { result ->
-                properties[result.groups[1]!!.value]?.toString() ?: result.value
+                map[result.groups[1]!!.value] ?: result.value
             }
         }
     }
     doLast {
-        println("$name output is: ${destinationDir.toLinkedString()}")
+        println("$taskName output is: ${destDir.get().asFile.toLinkedString()}")
     }
 }
 
 tasks.register<Zip>("package") {
     description = "package all files to zip"
     group = "package"
-    archiveFileName.set("${project.name}.zip")
+    val archive = "${project.name}.zip"
+    val taskName = name
+    archiveFileName.set(archive)
     val webpack =
-        tasks.getByName<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserProductionWebpack")
+        tasks.named<org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack>("jsBrowserProductionWebpack")
     dependsOn(webpack)
-    from(tasks.getByName("jsProcessResources").outputs)
-    from(webpack.outputDirectory)
-    val path = layout.buildDirectory.get().asFile.toPath().resolve("package")
-    val directory = path.toFile()
-    destinationDirectory.set(directory)
-    val file = path.resolve(archiveFileName.get())
+    from(tasks.named("jsProcessResources").map { it.outputs.files }, webpack.flatMap { it.outputDirectory })
+    val path = layout.buildDirectory.dir("package")
+    destinationDirectory.set(path)
+    val file = layout.buildDirectory.file("package/$archive")
     exclude("*.zip")
     doLast {
-        println("$name output is: ${file.toLinkedString()} in ${path.toLinkedString()}")
+        println("$taskName output is: ${file.get().asFile.toLinkedString()} in ${path.get().asFile.toLinkedString()}")
     }
 }
+
 tasks.register<Zip>("zipSource") {
     description = "prepare source zip"
     dependsOn("clean", "build")
     group = "package"
-    archiveFileName.set("${project.name}-source.zip")
+    val archive = "${project.name}-source.zip"
+    val taskName = name
+    archiveFileName.set(archive)
     from(layout.projectDirectory)
-    val buildPath = layout.buildDirectory.get().asFile.toPath()
-    val packagePath = buildPath / "package"
-    val packageFile = packagePath / archiveFileName.get()
-    exclude(".*", "*.zip", "gradle/wrapper")
-    exclude(
-        listOf(buildPath, packagePath, packageFile)
-            .map { it.relativeTo(layout.projectDirectory.asFile.toPath()).toString() })
-    destinationDirectory.set(packagePath.toFile())
+    val buildPath = layout.buildDirectory
+    val packagePath = buildPath.dir("package")
+    val packageFile = buildPath.file("package/$archive")
+    include("**/*")
+    exclude("build", ".gradle", "buildSrc/.gradle", ".idea", ".kotlin")
+    destinationDirectory.set(packagePath)
     doLast {
-        println("$name output is: ${packageFile.toLinkedString()} in ${packagePath.toLinkedString()}")
+        println("$taskName output is: ${packageFile.get().asFile.toLinkedString()} in ${packagePath.get().asFile.toLinkedString()}")
     }
 }
 
