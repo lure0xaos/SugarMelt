@@ -1,61 +1,83 @@
 package sugarmelt.app
 
+import de.comahe.i18n4k.Locale
+import de.comahe.i18n4k.config.I18n4kConfig
+import de.comahe.i18n4k.config.I18n4kConfigDefault
+import de.comahe.i18n4k.getDisplayNameInLocale
+import de.comahe.i18n4k.i18n4k
+import de.comahe.i18n4k.language
 import org.w3c.dom.*
 import sugarmelt.Messages
 import sugarmelt.api.*
-import sugarmelt.css.Stylesheets.CLASS_CONTAINER_BACKGROUND
-import sugarmelt.css.Stylesheets.CLASS_BUTTON
-import sugarmelt.css.Stylesheets.CLASS_CELL
-import sugarmelt.css.Stylesheets.CLASS_CELL_DATA
-import sugarmelt.css.Stylesheets.CLASS_CELL_DATA_COLLAPSED
-import sugarmelt.css.Stylesheets.CLASS_CELL_DATA_COLLAPSIBLE
-import sugarmelt.css.Stylesheets.CLASS_CELL_DATA_MULTIPLE
-import sugarmelt.css.Stylesheets.CLASS_CELL_DATA_SINGLE
-import sugarmelt.css.Stylesheets.CLASS_CELL_LABEL
-import sugarmelt.css.Stylesheets.CLASS_CLICKABLE
-import sugarmelt.css.Stylesheets.CLASS_EDITOR
-import sugarmelt.css.Stylesheets.CLASS_EDITOR_CHANGED
-import sugarmelt.css.Stylesheets.CLASS_EDITOR_HIGHLIGHT
-import sugarmelt.css.Stylesheets.CLASS_EDITOR_LOCK
-import sugarmelt.css.Stylesheets.CLASS_EDITOR__TYPE
-import sugarmelt.css.Stylesheets.CLASS_GRID
-import sugarmelt.css.Stylesheets.CLASS_GRID_ROW
-import sugarmelt.css.Stylesheets.CLASS_GRID_ROW_CELL
-import sugarmelt.css.Stylesheets.CLASS_GRID_ROW_CELL_ITEM
-import sugarmelt.css.Stylesheets.CLASS_GRID_ROW_CELL_LABEL
-import sugarmelt.css.Stylesheets.CLASS_GRID_VAR_CONTROLS
-import sugarmelt.css.Stylesheets.CLASS_HIDDEN
-import sugarmelt.css.Stylesheets.CLASS_LABEL
-import sugarmelt.css.Stylesheets.CLASS_MESSAGE
-import sugarmelt.css.Stylesheets.CLASS_MESSAGE__TYPE
-import sugarmelt.css.Stylesheets.CLASS_OBJECT_EMPTY
-import sugarmelt.css.Stylesheets.CLASS_SMALL
-import sugarmelt.css.Stylesheets.CLASS_STICKY_TOP
-import sugarmelt.css.Stylesheets.CLASS_STICKY_TOP_AFTER
-import sugarmelt.css.Stylesheets.CLASS_SWITCH
-import sugarmelt.css.Stylesheets.CLASS_SWITCH_SLIDER
-import sugarmelt.css.Stylesheets.CLASS_SWITCH_SLIDER_ROUND
-import sugarmelt.css.Stylesheets.CLASS_TABLE
-import sugarmelt.css.Stylesheets.CLASS_TABLE_HEADER
-import sugarmelt.css.Stylesheets.CLASS_TD
-import sugarmelt.css.Stylesheets.CLASS_TH
-import sugarmelt.css.Stylesheets.CLASS_TOOLS
-import sugarmelt.css.Stylesheets.CLASS_TR
-import sugarmelt.css.Stylesheets.CLASS_Z_1
-import sugarmelt.css.Stylesheets.ID_CONTAINER
-import sugarmelt.css.Stylesheets.ID_CONTENT
-import sugarmelt.css.Stylesheets.ID_CONTROLS
-import sugarmelt.css.Stylesheets.ID_GAME_TITLE
-import sugarmelt.css.Stylesheets.ID_TOOLBAR
-import sugarmelt.css.Stylesheets.stylesheet
+import sugarmelt.api.a
+import sugarmelt.api.div
+import sugarmelt.api.getManifest
+import sugarmelt.api.getString
+import sugarmelt.api.h2
+import sugarmelt.api.span
+import sugarmelt.api.text
+import sugarmelt.css.StylesheetFlags
+import sugarmelt.css.StylesheetMain
+import sugarmelt.css.StylesheetMain.CLASS_BUTTON
+import sugarmelt.css.StylesheetMain.CLASS_CELL
+import sugarmelt.css.StylesheetMain.CLASS_CELL_DATA
+import sugarmelt.css.StylesheetMain.CLASS_CELL_DATA_COLLAPSED
+import sugarmelt.css.StylesheetMain.CLASS_CELL_DATA_COLLAPSIBLE
+import sugarmelt.css.StylesheetMain.CLASS_CELL_DATA_MULTIPLE
+import sugarmelt.css.StylesheetMain.CLASS_CELL_DATA_SINGLE
+import sugarmelt.css.StylesheetMain.CLASS_CELL_LABEL
+import sugarmelt.css.StylesheetMain.CLASS_CLICKABLE
+import sugarmelt.css.StylesheetMain.CLASS_CONTAINER_BACKGROUND
+import sugarmelt.css.StylesheetMain.CLASS_EDITOR
+import sugarmelt.css.StylesheetMain.CLASS_EDITOR_CHANGED
+import sugarmelt.css.StylesheetMain.CLASS_EDITOR_HIGHLIGHT
+import sugarmelt.css.StylesheetMain.CLASS_EDITOR_LOCK
+import sugarmelt.css.StylesheetMain.CLASS_EDITOR__TYPE
+import sugarmelt.css.StylesheetMain.CLASS_GRID
+import sugarmelt.css.StylesheetMain.CLASS_GRID_ROW
+import sugarmelt.css.StylesheetMain.CLASS_GRID_ROW_CELL
+import sugarmelt.css.StylesheetMain.CLASS_GRID_ROW_CELL_ITEM
+import sugarmelt.css.StylesheetMain.CLASS_GRID_ROW_CELL_LABEL
+import sugarmelt.css.StylesheetMain.CLASS_GRID_VAR_CONTROLS
+import sugarmelt.css.StylesheetMain.CLASS_HEADER
+import sugarmelt.css.StylesheetMain.CLASS_HIDDEN
+import sugarmelt.css.StylesheetMain.CLASS_I18N
+import sugarmelt.css.StylesheetMain.CLASS_LABEL
+import sugarmelt.css.StylesheetMain.CLASS_MESSAGE
+import sugarmelt.css.StylesheetMain.CLASS_MESSAGE__TYPE
+import sugarmelt.css.StylesheetMain.CLASS_OBJECT_EMPTY
+import sugarmelt.css.StylesheetMain.CLASS_SELECT
+import sugarmelt.css.StylesheetMain.CLASS_SMALL
+import sugarmelt.css.StylesheetMain.CLASS_STICKY_TOP
+import sugarmelt.css.StylesheetMain.CLASS_STICKY_TOP_AFTER
+import sugarmelt.css.StylesheetMain.CLASS_SWITCH
+import sugarmelt.css.StylesheetMain.CLASS_SWITCH_SLIDER
+import sugarmelt.css.StylesheetMain.CLASS_SWITCH_SLIDER_ROUND
+import sugarmelt.css.StylesheetMain.CLASS_TABLE
+import sugarmelt.css.StylesheetMain.CLASS_TABLE_HEADER
+import sugarmelt.css.StylesheetMain.CLASS_TD
+import sugarmelt.css.StylesheetMain.CLASS_TH
+import sugarmelt.css.StylesheetMain.CLASS_TOOLS
+import sugarmelt.css.StylesheetMain.CLASS_TR
+import sugarmelt.css.StylesheetMain.CLASS_Z_1
+import sugarmelt.css.StylesheetMain.ID_CONTAINER
+import sugarmelt.css.StylesheetMain.ID_CONTENT
+import sugarmelt.css.StylesheetMain.ID_CONTROLS
+import sugarmelt.css.StylesheetMain.ID_GAME_TITLE
+import sugarmelt.css.StylesheetMain.ID_TOOLBAR
 import sugarmelt.data.SugarMeltOptions
+import sugarmelt.data.getCountryCode
 import sugarmelt.data.info.*
 import sugarmelt.data.ui.GeneralUI
 import sugarmelt.data.ui.VarUI
 import kotlin.js.Date
 import kotlin.js.Json
 
-class SugarMelt(private val root: HTMLElement) {
+class SugarMelt(
+    private val root: HTMLElement,
+    private val options: SugarMeltOptions,
+    private val i18n4kConfig: I18n4kConfigDefault
+) {
     private val devEnableExperimentalTools = false
 
     @Suppress("SpellCheckingInspection")
@@ -74,7 +96,6 @@ class SugarMelt(private val root: HTMLElement) {
     private val status: HTMLElement
     private val gameTitle: HTMLHeadingElement
     private val toolbar: HTMLDivElement
-    private val options: SugarMeltOptions = SugarMeltOptions()
     private var isUpdating: Boolean = false
     private var rootExpression: String = ""
     private lateinit var rootData: RootObjectData
@@ -674,17 +695,6 @@ class SugarMelt(private val root: HTMLElement) {
 
     private fun getIdFrom(path: List<String>) = path.joinToString("_")
 
-    private fun HTMLElement.initHeader() {
-        getManifest().also {
-            div("header") {
-                a(it.getString("homepage_url")) {
-                    h2("${it["name"]} v.${it["version"]}")
-                    target = "_blank"
-                }
-            }
-        }
-    }
-
     private fun HTMLElement.initTools() {
         val tr = div { id = ID_CONTROLS }.div("$CLASS_TABLE $CLASS_GRID $CLASS_TOOLS").div("$CLASS_TR $CLASS_GRID_ROW")
         tr.div("$CLASS_TH $CLASS_CELL $CLASS_CELL_LABEL").label(CLASS_LABEL).text(Messages.options_interval_label())
@@ -692,10 +702,6 @@ class SugarMelt(private val root: HTMLElement) {
             onChange {
                 options.interval = value.toInt()
                 options.save()
-            }
-        }.apply {
-            options.load {
-                value = options.interval.toString()
             }
         }
         tr.div("$CLASS_TD $CLASS_CELL $CLASS_CELL_DATA $CLASS_SMALL").text(Messages.options_interval_help())
@@ -705,31 +711,31 @@ class SugarMelt(private val root: HTMLElement) {
             onKeyUp { filterSome(value) }
             onFocus { select() }
         }
-        tr.div("$CLASS_TD $CLASS_CELL $CLASS_GRID_ROW_CELL_ITEM $CLASS_SMALL").input("button", Messages.controls_filter_button(),
-            CLASS_BUTTON
-        ) {
-            title = Messages.controls_filter_button_help()
-            onClick {
-                elementFilter.value = ""
-                filterSome("")
-                elementFilter.focus()
+        tr.div("$CLASS_TD $CLASS_CELL $CLASS_GRID_ROW_CELL_ITEM $CLASS_SMALL")
+            .input("button", Messages.controls_filter_button(), CLASS_BUTTON) {
+                title = Messages.controls_filter_button_help()
+                onClick {
+                    elementFilter.value = ""
+                    filterSome("")
+                    elementFilter.focus()
+                }
             }
-        }
         tr.div("$CLASS_TH $CLASS_CELL $CLASS_CELL_LABEL").label(CLASS_LABEL).text(Messages.controls_highlight_label())
-        val elementHighlight = tr.div("$CLASS_TD $CLASS_CELL $CLASS_GRID_ROW_CELL_ITEM").input("text", "", CLASS_EDITOR) {
-            title = Messages.controls_highlight_help()
-            onKeyUp { highlightSome(value) }
-            onFocus { select() }
-        }
+        val elementHighlight =
+            tr.div("$CLASS_TD $CLASS_CELL $CLASS_GRID_ROW_CELL_ITEM").input("text", "", CLASS_EDITOR) {
+                title = Messages.controls_highlight_help()
+                onKeyUp { highlightSome(value) }
+                onFocus { select() }
+            }
         tr.div("$CLASS_TD $CLASS_CELL $CLASS_GRID_ROW_CELL_ITEM $CLASS_SMALL")
             .input("button", Messages.controls_highlight_button(), CLASS_BUTTON) {
-            title = Messages.controls_highlight_button_help()
-            onClick {
-                elementHighlight.value = ""
-                highlightSome("")
-                elementHighlight.focus()
+                title = Messages.controls_highlight_button_help()
+                onClick {
+                    elementHighlight.value = ""
+                    highlightSome("")
+                    elementHighlight.focus()
+                }
             }
-        }
     }
 
     private fun <T : Element> T.buttonCollapse(): T = apply {
@@ -752,9 +758,9 @@ class SugarMelt(private val root: HTMLElement) {
             val matchingPattern = pattern.isNotBlank() && isMatchingPattern(pattern, it)
             it.ui.labelPoint.also { element ->
                 if (matchingPattern) {
-                    element.classList+= CLASS_EDITOR_HIGHLIGHT
+                    element.classList += CLASS_EDITOR_HIGHLIGHT
                 } else {
-                    element.classList-= CLASS_EDITOR_HIGHLIGHT
+                    element.classList -= CLASS_EDITOR_HIGHLIGHT
                 }
             }
         }
@@ -817,29 +823,67 @@ class SugarMelt(private val root: HTMLElement) {
 
     init {
         root.apply {
-            addStyle(stylesheet)
+            addStyle(StylesheetMain.stylesheet)
+            addStyle(StylesheetFlags.stylesheet)
             removeAll()
             div { id = ID_CONTAINER }.apply {
-                val table = div("$CLASS_TABLE $CLASS_TABLE_HEADER $CLASS_STICKY_TOP $CLASS_Z_1 $CLASS_CONTAINER_BACKGROUND")
-                table.div("$CLASS_TR $CLASS_GRID_ROW").div("$CLASS_TD $CLASS_CELL").initHeader()
-                val row = table.div("$CLASS_TR $CLASS_GRID_ROW")
-                gameTitle = row.div("$CLASS_TD $CLASS_CELL").h1 { id = ID_GAME_TITLE }
-                toolbar = row.div("$CLASS_TD $CLASS_CELL").div { id = ID_TOOLBAR }
-                row.div("$CLASS_TD $CLASS_CELL").initTools()
-                div(CLASS_STICKY_TOP_AFTER).also {
-                    it.style.paddingTop = "" + table.clientHeight + "px"
+                val table =
+                    div("$CLASS_TABLE $CLASS_TABLE_HEADER $CLASS_STICKY_TOP $CLASS_Z_1 $CLASS_CONTAINER_BACKGROUND")
+                table.div("$CLASS_TR $CLASS_GRID_ROW").also { row ->
+                    row.div("$CLASS_TD $CLASS_CELL").div(CLASS_HEADER) {
+                        h2 {
+                            getManifest().also {
+                                a(it.getString("homepage_url")) {
+                                    target = "_blank"
+                                    text("${it["name"]} v.${it["version"]}")
+                                }
+                            }
+                        }
+                    }
+                    row.div("$CLASS_TD $CLASS_CELL").div(CLASS_HEADER).span(CLASS_I18N).i18n()
+                    status = row.div("$CLASS_TD $CLASS_CELL").div(CLASS_HEADER).div(CLASS_MESSAGE)
                 }
-                status = div(CLASS_MESSAGE)
+                table.div("$CLASS_TR $CLASS_GRID_ROW").also {
+                    gameTitle = it.div("$CLASS_TD $CLASS_CELL").h1 { id = ID_GAME_TITLE }
+                    toolbar = it.div("$CLASS_TD $CLASS_CELL").div { id = ID_TOOLBAR }
+                    it.div("$CLASS_TD $CLASS_CELL").initTools()
+                }
+                div(CLASS_STICKY_TOP_AFTER) {
+                    style.paddingTop = "${table.clientHeight}px"
+                }
                 content = div { id = ID_CONTENT }
             }
         }
         detectEngines()
     }
 
+    private fun HTMLElement.i18n() {
+        select(CLASS_SELECT) {
+            locales.forEach {
+                option("fi fi-${getCountryCode(it).lowercase()} fis") {
+                    value = it.language
+                    selected = it.language == i18n4kConfig.locale.getLanguage()
+                    text(it.getDisplayNameInLocale())
+                }
+            }
+            onChange {
+                i18n4kConfig.locale = Locale(this.value)
+                this@SugarMelt.options.language = Locale(this.value)
+                this@SugarMelt.options.save()
+            }
+        }
+    }
+
     companion object {
+
+        val locales: Set<Locale> = setOf(
+            Locale("en"),
+            Locale("ru"),
+        )
+
         val supportedTypes: List<String> = listOf("bigint", "boolean", "number", "string", "Date")
         private var instance: SugarMelt? = null
-        fun construct() {
+        fun construct(options: SugarMeltOptions, i18n4kConfig: I18n4kConfigDefault) {
             getManifest().apply {
                 val iconPath = getJson("icons")?.getString("16") ?: error("no icon")
                 val relIconPath =
@@ -853,7 +897,7 @@ class SugarMelt(private val root: HTMLElement) {
                     "panel.html",
                     {
                         require(instance == null)
-                        instance = SugarMelt(it.document.body ?: error("cannot get body"))
+                        instance = SugarMelt(it.document.body ?: error("cannot get body"), options, i18n4kConfig)
                     },
                     {
                         instance?.destroy()
@@ -861,5 +905,8 @@ class SugarMelt(private val root: HTMLElement) {
                     })
             }
         }
+
+        fun Locale.languageOr(i18n4kConfig: I18n4kConfig = i18n4k): Locale =
+            takeIf { it in locales } ?: i18n4kConfig.locale
     }
 }

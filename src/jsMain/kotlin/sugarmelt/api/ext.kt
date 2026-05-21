@@ -31,21 +31,34 @@ fun createPanel(title: String, icon: String, page: String, onShown: (Window) -> 
 }
 
 fun <T : Any> storageGet(defData: T, onSuccess: (T) -> Unit, onError: (Throwable) -> Unit) {
-    if (isChrome)
-        chrome.storage.local.get(defData) { data: T -> onSuccess(data) }
-    else
+    if (isChrome) {
+        runCatching {
+            chrome.storage.local.get(defData) { data: T -> onSuccess(data) }
+        }.onFailure {
+            onError(it)
+        }
+    } else {
         browser.storage.local.get(defData).then(onSuccess).catch(onError)
+    }
 }
 
 fun <T : Any> storageSet(data: T, onError: (Throwable) -> Unit) {
-    if (isChrome)
-        chrome.storage.local.set(data) {}
-    else
+    if (isChrome) {
+        runCatching {
+            chrome.storage.local.set(data) {}
+        }.onFailure {
+            onError(it)
+        }
+    } else {
         browser.storage.local.set(data).catch(onError)
+    }
 }
 
 fun getManifest(): Json =
     if (isChrome) chrome.runtime.getManifest() else browser.runtime.getManifest()
+
+fun getURL(url: String): String =
+    if (isChrome) chrome.runtime.getURL(url) else browser.runtime.getURL(url)
 
 @Suppress("ClassName")
 external object browser {
@@ -72,6 +85,7 @@ external object browser {
 
     object runtime {
         fun getManifest(): Json
+        fun getURL(url: String): String
     }
 }
 
@@ -105,6 +119,7 @@ external object chrome {
 
     object runtime {
         fun getManifest(): Json
+        fun getURL(url: String): String
     }
 }
 

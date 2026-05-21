@@ -105,3 +105,31 @@ fun Element.a(
     init: Initializer<HTMLAnchorElement> = {}
 ): HTMLAnchorElement =
     createElement("a", classes, attrs) { href = url; init() }
+
+fun Element.i(
+    classes: String? = null,
+    attrs: Attributes? = null,
+    init: Initializer<HTMLElement> = {}
+): HTMLElement =
+    createElement("i", classes, attrs, init)
+
+fun Element.button(
+    classes: String? = null,
+    attrs: Attributes? = null,
+    init: Initializer<HTMLButtonElement> = {}
+): HTMLButtonElement =
+    createElement("button", classes, attrs, init)
+
+fun Element.select(
+    classes: String? = null,
+    attrs: Attributes? = null,
+    init: Initializer<HTMLSelectElement> = {}
+): HTMLSelectElement =
+    createElement("select", classes, attrs) { ; init() }
+
+fun Element.option(
+    classes: String? = null,
+    attrs: Attributes? = null,
+    init: Initializer<HTMLOptionElement> = {}
+): HTMLOptionElement =
+    createElement("option", classes, attrs) { ; init() }

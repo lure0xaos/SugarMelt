@@ -1,15 +1,18 @@
 [versions]
 javaVersion = "22"
 org-jetbrains-kotlin = "2.3.21"
+org-jetbrains-kotlinx-kotlinx-serialization-json = "1.11.0"
 org-jetbrains-kotlin-wrappers-kotlin-wrappers = "2026.5.5"
 de-comahe-i18n4k = "0.11.2"
 nl-astraeus-kotlin-css-generator = "1.1.0"
 
 [plugins]
 org-jetbrains-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "org-jetbrains-kotlin" }
+org-jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "org-jetbrains-kotlin" }
 de-comahe-i18n4k = { id = "de.comahe.i18n4k", version.ref = "de-comahe-i18n4k" }
 
 [libraries]
+org-jetbrains-kotlinx-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "org-jetbrains-kotlinx-kotlinx-serialization-json" }
 org-jetbrains-kotlin-wrappers-kotlin-wrappers-bom = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "org-jetbrains-kotlin-wrappers-kotlin-wrappers" }
 org-jetbrains-kotlin-wrappers-kotlin-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser" }
 org-jetbrains-kotlin-wrappers-kotlin-web = { module = "org.jetbrains.kotlin-wrappers:kotlin-web" }

@@ -2,7 +2,18 @@ package sugarmelt.api
 
 import kotlinx.browser.window
 
-private fun toJsString(vararg info: Any?) = info.joinToString { if (info.isEmpty()) "" else JSON.stringify(info) }
+private fun toJsString(vararg info: Any?): String =
+    when {
+        info.isEmpty() -> ""
+        info.size == 1 -> info.first().let {
+            if (it == null)
+                ""
+            else
+                encode(it)
+        }
+
+        else -> info.joinToString { toJsString(info) }
+    }
 
 fun alert(message: String, vararg info: Any?): Unit =
     window.alert("$message ${toJsString(info)}")

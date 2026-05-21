@@ -1,6 +1,7 @@
 package sugarmelt.api
 
 import kotlin.js.Json
+import kotlin.js.json
 
 fun Exception(exception: ExceptionInfo): Exception {
     return Exception(
@@ -53,3 +54,18 @@ val Json.keys: List<String>
     get() = jsKeys(this)
 val Json.values: List<Any?>
     get() = jsValues(this)
+
+
+fun Map<String, Any?>.toJsJson(): Json {
+    val entries = this.map { it.key to it.value }.toTypedArray()
+    return json(*entries)
+}
+
+fun Json.toKotlinMap(): Map<String, Any?> {
+    val map = mutableMapOf<String, Any?>()
+    val keys = jsKeys(this)
+    for (key in keys) {
+        map[key] = this[key]
+    }
+    return map
+}

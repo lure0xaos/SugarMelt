@@ -5,6 +5,7 @@ group = "sugarmelt"
 
 plugins {
     alias(libs.plugins.org.jetbrains.kotlin.multiplatform)
+    alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.de.comahe.i18n4k)
 }
 
@@ -40,6 +41,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(dependencies.platform(libs.org.jetbrains.kotlin.wrappers.kotlin.wrappers.bom))
+                implementation(libs.org.jetbrains.kotlinx.kotlinx.serialization.json)
                 implementation(libs.nl.astraeus.kotlin.css.generator)
                 implementation(libs.de.comahe.i18n4k.i18n4k.core)
             }
