@@ -1,3 +1,5 @@
+package sugarmelt
+
 import kotlinx.browser.window
 import sugarmelt.app.SugarMelt
 

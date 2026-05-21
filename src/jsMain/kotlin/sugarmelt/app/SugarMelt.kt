@@ -342,8 +342,8 @@ class SugarMelt(private val root: HTMLElement) {
 
     private fun onFinishEdit(varData: VarData) {
         if (varData.isEditing) {
-            setFieldValue(varData, fromEditor(varData.jsType, varData.ui.editor.value))
             varData.isEditing = false
+            setFieldValue(varData, fromEditor(varData.jsType, varData.ui.editor.value))
         }
     }
 
