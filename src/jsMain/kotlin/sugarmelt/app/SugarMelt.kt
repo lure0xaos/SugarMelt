@@ -9,13 +9,6 @@ import de.comahe.i18n4k.language
 import org.w3c.dom.*
 import sugarmelt.Messages
 import sugarmelt.api.*
-import sugarmelt.api.a
-import sugarmelt.api.div
-import sugarmelt.api.getManifest
-import sugarmelt.api.getString
-import sugarmelt.api.h2
-import sugarmelt.api.span
-import sugarmelt.api.text
 import sugarmelt.css.StylesheetFlags
 import sugarmelt.css.StylesheetMain
 import sugarmelt.css.StylesheetMain.CLASS_BUTTON
@@ -46,7 +39,6 @@ import sugarmelt.css.StylesheetMain.CLASS_LABEL
 import sugarmelt.css.StylesheetMain.CLASS_MESSAGE
 import sugarmelt.css.StylesheetMain.CLASS_MESSAGE__TYPE
 import sugarmelt.css.StylesheetMain.CLASS_OBJECT_EMPTY
-import sugarmelt.css.StylesheetMain.CLASS_SELECT
 import sugarmelt.css.StylesheetMain.CLASS_SMALL
 import sugarmelt.css.StylesheetMain.CLASS_STICKY_TOP
 import sugarmelt.css.StylesheetMain.CLASS_STICKY_TOP_AFTER
@@ -57,6 +49,7 @@ import sugarmelt.css.StylesheetMain.CLASS_TABLE
 import sugarmelt.css.StylesheetMain.CLASS_TABLE_HEADER
 import sugarmelt.css.StylesheetMain.CLASS_TD
 import sugarmelt.css.StylesheetMain.CLASS_TH
+import sugarmelt.css.StylesheetMain.CLASS_TOGGLE
 import sugarmelt.css.StylesheetMain.CLASS_TOOLS
 import sugarmelt.css.StylesheetMain.CLASS_TR
 import sugarmelt.css.StylesheetMain.CLASS_Z_1
@@ -66,6 +59,7 @@ import sugarmelt.css.StylesheetMain.ID_CONTROLS
 import sugarmelt.css.StylesheetMain.ID_GAME_TITLE
 import sugarmelt.css.StylesheetMain.ID_TOOLBAR
 import sugarmelt.data.SugarMeltOptions
+import sugarmelt.data.flag
 import sugarmelt.data.getCountryCode
 import sugarmelt.data.info.*
 import sugarmelt.data.ui.GeneralUI
@@ -858,30 +852,31 @@ class SugarMelt(
     }
 
     private fun HTMLElement.i18n() {
-        select(CLASS_SELECT) {
-            locales.forEach {
-                option("fi fi-${getCountryCode(it).lowercase()} fis") {
+        div(CLASS_TOGGLE) {
+            SugarMeltLocales.locales.forEach {
+                input("radio") {
+                    id = it.toString()
+                    name = "languages"
                     value = it.language
-                    selected = it.language == i18n4kConfig.locale.getLanguage()
-                    text(it.getDisplayNameInLocale())
+                    checked = it.language == i18n4kConfig.locale.getLanguage()
+                    onClick {
+                        i18n4kConfig.locale = Locale(this.value)
+                        this@SugarMelt.options.language = Locale(this.value)
+                        this@SugarMelt.options.save()
+                    }
                 }
-            }
-            onChange {
-                i18n4kConfig.locale = Locale(this.value)
-                this@SugarMelt.options.language = Locale(this.value)
-                this@SugarMelt.options.save()
+                label("fi fi-${getCountryCode(it).lowercase()} fis") {
+                    htmlFor = it.toString()
+                    flag(it)
+                    title = it.getDisplayNameInLocale()
+                }
             }
         }
     }
 
     companion object {
-
-        val locales: Set<Locale> = setOf(
-            Locale("en"),
-            Locale("ru"),
-        )
-
         val supportedTypes: List<String> = listOf("bigint", "boolean", "number", "string", "Date")
+        
         private var instance: SugarMelt? = null
         fun construct(options: SugarMeltOptions, i18n4kConfig: I18n4kConfigDefault) {
             getManifest().apply {
@@ -907,6 +902,6 @@ class SugarMelt(
         }
 
         fun Locale.languageOr(i18n4kConfig: I18n4kConfig = i18n4k): Locale =
-            takeIf { it in locales } ?: i18n4kConfig.locale
+            takeIf { it in SugarMeltLocales.locales } ?: i18n4kConfig.locale
     }
 }

@@ -48,9 +48,13 @@ object StylesheetMain : IStylesheet {
     const val ID_CONTENT = "content"
     const val ID_CONTROLS = "controls"
 
+    const val TAG_ALL = "*"
     const val TAG_BODY = "body"
-    const val CLASS_LABEL = "label"
+    const val TAG_INPUT = "input"
+    const val TAG_TEXTAREA = "textarea"
+    const val TAG_LABEL = "label"
     const val TAG_HR = "hr"
+    const val CLASS_LABEL = "label"
 
     const val CLASS_TABLE = "table"
     const val CLASS_TABLE_CAPTION = "caption"
@@ -85,6 +89,7 @@ object StylesheetMain : IStylesheet {
     const val CLASS_CELL_DATA_SINGLE = "single"
 
     const val CLASS_SELECT = "select"
+    const val CLASS_TOGGLE = "toggle"
 
     const val CLASS_EDITOR = "editor"
     const val CLASS_EDITOR__TYPE = "editor-"
@@ -132,8 +137,8 @@ object StylesheetMain : IStylesheet {
     override val stylesheet: String = style {
         cssTables()
         cssCommon()
+        cssSelection()
         select(cls(CLASS_I18N)) {
-            margin(2.px, 5.px)
             cssI18n()
         }
         select(id(ID_CONTAINER)) {
@@ -165,6 +170,51 @@ object StylesheetMain : IStylesheet {
                     borderBottomRightRadius(radiusBorders)
                 }
             }
+        }
+        select(cls(CLASS_TOGGLE)) {
+            display(Display.flex)
+            overflow(Overflow.hidden)
+            select(TAG_INPUT) {
+                position(Position.absolute)
+                clip(Clip.rect(0, 0, 0, 0))
+                height(1.px)
+                width(1.px)
+                border(0.px, BorderStyle.none, Color.inherit)
+                overflow(Overflow.hidden)
+                and(":checked + $TAG_LABEL") {
+                    backgroundColor(backgroundColor)
+                    borderStyle(BorderStyle.inset)
+                }
+            }
+            select(TAG_LABEL) {
+                padding(5.px)
+                borderRadius(0.px)
+                backgroundColor(backgroundColor)
+                color(bodyColor)
+                textAlign(TextAlign.center)
+                borderWidth(2.px)
+                borderStyle(BorderStyle.outset)
+                borderColor(Color("buttonborder"))
+                borderImage(Image.initial.css())
+                and(":hover") {
+                    cursor("pointer")
+                }
+                and(":first-of-type") {
+                    borderRadius(radiusBorders, 0.px, 0.px, radiusBorders)
+                }
+                and(":last-of-type") {
+                    borderRadius(0.px, radiusBorders, radiusBorders, 0.px)
+                }
+            }
+        }
+    }
+
+    private fun Style.cssSelection() {
+        select(TAG_ALL) {
+            userSelect(UserSelect.none)
+        }
+        select(TAG_INPUT, TAG_TEXTAREA) {
+            userSelect(UserSelect.text)
         }
     }
 

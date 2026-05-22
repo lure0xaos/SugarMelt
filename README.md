@@ -32,6 +32,7 @@ compatible with Chrome and Firefox (possibly others could handle it too).
 
 - **Chrome**: download repository and use *Developer Mode* then point
   `build/dist/js/productionExecutable` or `build/dist/js/developmentExecutable` directory
+  - Also, you can run `unpacked` Gradle task and use `build/dist/package` directory
 - **Firefox**: use *Firefox Developer Edition*, upload as *Temporary Extension* and point
   `build/package/SugarMelt.zip` file
 
@@ -44,10 +45,10 @@ need.
 
 ### Building
 
-- to build as packed extension run `jsBrowserProductionWebpack` Gradle task.
+- to build as packed extension run `package` Gradle task.
   Then in `build/package` you'll find `SugarMelt.zip` file containing packed extension.
-- to build as unpacked extension run `jsBrowserProductionWebpack` Gradle task.
-  Then `build/dist/js/productionExecutable` directory contains unpacked extension.
+- to build as unpacked extension run `unpacked` Gradle task.
+  Then `build/dist/package` directory contains unpacked extension.
 - to build it to debug run `jsBrowserDevelopmentWebpack` Gradle task.
   Then `build/dist/js/developmentExecutable` directory contains unpacked extension
   with source code suitable for debugging.
@@ -64,13 +65,18 @@ Extension is completely rewritten, these are changes:
 
 ## TODO
 
-- support more HTML games and game engines
-  (What a pity some of them requires patching, that's not this extension is intended to do)
-- removal and creation feature (in development)
+- ~~support more HTML games and game engines~~
+  (What a pity some of them requires patching, that's not this extension is intended to do **SO, CLOSED**)
+- ~~removal and creation feature~~ (Complete. If something is buggy, close and open DevTools.)
 - correct sorting when new variables are discovered
 
 ## Latest changes
 
+- 23.05.2026 21:00 - v.3.0.5: Some UI improvements:
+  - ability to change UI language
+  - altered some colors for better visual distinction
+  - settings are persisted across versions, no separate options page, all changes are made through main page are persisted immediately
+  - 
 - 20.05.2026 21:00 - v.3.0.4: filter fix (thanks to @[flying-hippo](https://github.com/flying-hippo)). Changed some colors. Code refucktoring.
 - 15.10.2024 01:00 - v.3.0.3.5: Chrome: it's usable again! Chrome and Firefox. thanks
 - 14.10.2024 00:00 - v.3.0.3.4: it's usable again! Chrome and Firefox. thanks
