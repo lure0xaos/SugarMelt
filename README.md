@@ -72,11 +72,13 @@ Extension is completely rewritten, these are changes:
 
 ## Latest changes
 
-- 23.05.2026 21:00 - v.3.0.5: Some UI improvements:
+- 23.05.2026 21:00 - v.3.0.5.0: Some UI improvements:
+  - finally! Fixed annoying bug when two fields are switching focus (got me a long time to catch this)
   - ability to change UI language
   - altered some colors for better visual distinction
   - settings are persisted across versions, no separate options page, all changes are made through main page are persisted immediately
-  - 
+  - more languages supported (i'm using Google Translate, please native speaking people hint me if some translations are incorrect)
+  - _TODO_ make more good-looking UI theme...
 - 20.05.2026 21:00 - v.3.0.4: filter fix (thanks to @[flying-hippo](https://github.com/flying-hippo)). Changed some colors. Code refucktoring.
 - 15.10.2024 01:00 - v.3.0.3.5: Chrome: it's usable again! Chrome and Firefox. thanks
 - 14.10.2024 00:00 - v.3.0.3.4: it's usable again! Chrome and Firefox. thanks
